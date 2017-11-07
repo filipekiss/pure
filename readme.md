@@ -1,9 +1,21 @@
 # Pure
 
+This is a fork from [sindresorhus/pure]. My repository is synced with the upstream every time I make
+a change (or, at least, once a month). The contents of the file below may have been modified to
+reflect the changes I've made. Check out the [original] if you like.
+
+### Notable changes
+
+So far, the changes I've made are basically eye candy. (But, hey, I spend the day looking at my
+prompt. Might as well enjoy it)
+
+ * Added instructions to install using [zplug] and removed npm ones (since this fork, specifically,
+   can't be installed via npm)
+ * Added custom symbol for prompt errors instead of only changing the color to red
+
 > Pretty, minimal and fast ZSH prompt
 
-<img src="screenshot.png" width="864">
-
+![screenshot]
 
 ## Overview
 
@@ -11,11 +23,9 @@ Most prompts are cluttered, ugly and slow. I wanted something visually pleasing 
 
 ### Why?
 
-- Comes with the perfect prompt character.
-  Author went through the whole Unicode range to find it.
 - Shows `git` branch and whether it's dirty (with a `*`).
 - Indicates when you have unpushed/unpulled `git` commits with up/down arrows. *(Check is done asynchronously!)*
-- Prompt character turns red if the last command didn't exit with `0`.
+- Prompt character changes and turns red if the last command didn't exit with `0`.
 - Command execution time will be displayed if it exceeds the set threshold.
 - Username and host only displayed when in an SSH session.
 - Shows the current path in the title and the [current folder & command](screenshot-title-cmd.png) when a process is running.
@@ -24,12 +34,57 @@ Most prompts are cluttered, ugly and slow. I wanted something visually pleasing 
 
 ## Install
 
-Can be installed with `npm` or manually. Requires Git 2.0.0+ and ZSH 5.2+. Older versions of ZSH are known to work, but they are **not** recommended.
+Can be installed with [zplug] or manually. Requires Git 2.0.0+ and ZSH 5.2+. Older versions of ZSH are known to work, but they are **not** recommended.
 
-### npm
 
-```console
-$ npm install --global pure-prompt
+### zplug
+
+If you're using [zplug] to manage your zsh plugins, installing it is as easy as adding the line
+below to your `.zshrc`
+
+```
+zplug "filipekiss/pure", depth:1, use:"{async,pure}.zsh"
+```
+
+If you're not using zplug yet, here's a sample config to get you started (just add this to the
+beginning of your `.zshrc` file):
+
+```
+#----------------------------------------
+# zPlug
+#----------------------------------------
+
+if [[ ! -f ~/.zplug/init.zsh ]]; then
+  if (( $+commands[git] )); then
+    git clone https://github.com/zplug/zplug ~/.zplug
+  else
+    echo 'git not found' >&2
+    exit 1
+  fi
+fi
+
+source ~/.zplug/init.zsh
+
+#----------------------------------------
+# zPlug modules
+#----------------------------------------
+
+zplug "zplug/zplug", hook-build:"zplug --self-manage"
+zplug "filipekiss/pure", depth:1, use:"{async,pure}.zsh"
+
+#----------------------------------------
+# Install missing modules
+#----------------------------------------
+
+if ! zplug check --verbose; then
+  printf "Install? [y/N]: "
+  if read -q; then
+    echo; zplug install
+  fi
+fi
+
+zplug load
+
 ```
 
 That's it. Skip to [Getting started](#getting-started).
@@ -95,11 +150,16 @@ Set `PURE_GIT_UNTRACKED_DIRTY=0` to not include untracked files in dirtiness che
 
 ### `PURE_GIT_DELAY_DIRTY_CHECK`
 
-Time in seconds to delay git dirty checking for large repositories (git status takes > 5 seconds). The check is performed asynchronously, this is to save CPU. Defaults to `1800` seconds.
+Time in seconds to delay git dirty checking for large repositories (git status takes > 5 seconds). The check is performed asynchronously, this is to save CPU. Defaults to `1800` seconds (30 minutes).
 
 ### `PURE_PROMPT_SYMBOL`
 
 Defines the prompt symbol. The default value is `❯`.
+
+### `PURE_PROMPT_SYMBOL_ERROR`
+
+Defines the prompt symbol when the previous command returned anything other than `0`. The default
+value is `⊘`
 
 ### `PURE_GIT_DOWN_ARROW`
 
@@ -172,13 +232,13 @@ antibody bundle mafredri/zsh-async
 antibody bundle sindresorhus/pure
 ```
 
-### [zplug](https://github.com/zplug/zplug)
+### [zplug]
 
 Update your `.zshrc` file with the following two lines:
 
 ```sh
 zplug mafredri/zsh-async, from:github
-zplug sindresorhus/pure, use:pure.zsh, from:github, as:theme
+zplug filipekiss/pure, use:pure.zsh, from:github, as:theme
 ```
 
 ## FAQ
@@ -221,11 +281,19 @@ On a default setup, running the command `kldload pty` should do the trick. If yo
 
 ## Team
 
-[![Sindre Sorhus](https://github.com/sindresorhus.png?size=100)](http://sindresorhus.com) | [![Mathias Fredriksson](https://github.com/mafredri.png?size=100)](https://github.com/mafredri)
----|---
-[Sindre Sorhus](https://github.com/sindresorhus) | [Mathias Fredriksson](https://github.com/mafredri)
+[![Sindre Sorhus](https://github.com/sindresorhus.png?size=100)](http://sindresorhus.com) | [![Mathias Fredriksson](https://github.com/mafredri.png?size=100)](https://github.com/mafredri) | [![Filipe Kiss](https://github.com/filipekiss.png?size=100)](http://filipekiss.com.br)
+---|---|---
+[Sindre Sorhus](https://github.com/sindresorhus) | [Mathias Fredriksson](https://github.com/mafredri) | [Filipe Kiss](https://github.com/filipekiss)
 
 
 ## License
 
-MIT © [Sindre Sorhus](https://sindresorhus.com)
+Original Work - MIT © [Sindre Sorhus](https://sindresorhus.com)
+
+Further Modifications - MIT © [Filipe Kiss]
+
+[Filipe Kiss]: http://github.com/filipekiss
+[screenshot]: screenshot.png
+[sindresorhus/pure]: https://github.com/sindresorhus/pure
+[original]: https://github.com/sindresorhus/pure/blob/master/readme.md
+[zplug]: https://github.com/zplug/zplug
