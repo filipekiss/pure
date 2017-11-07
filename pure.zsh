@@ -463,8 +463,8 @@ prompt_pure_setup() {
 	# if a virtualenv is activated, display it in grey
 	PROMPT='%(12V.%F{242}%12v%f .)'
 
-	# prompt turns red if the previous command didn't exit with 0
-	PROMPT+='%(?.%F{magenta}.%F{red})${PURE_PROMPT_SYMBOL:-❯}%f '
+	# prompt turns red and change symbol if the previous command didn't exit with 0
+	PROMPT+='%(?.%F{magenta}${PURE_PROMPT_SYMBOL:-❯}.%F{red}${PURE_PROMPT_SYMBOL_ERROR:-⊘})%f '
 }
 
 prompt_pure_setup "$@"
