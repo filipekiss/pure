@@ -116,6 +116,9 @@ prompt_pure_preprompt_render() {
 	if [[ -n $prompt_pure_vcs_info[branch] ]]; then
 		preprompt_parts+=("%F{$git_color}"'${prompt_pure_vcs_info[branch]}${prompt_pure_git_dirty}%f')
 	fi
+	if [[ -n $prompt_pure_vcs_info[tag] ]]; then
+		preprompt_parts+=("%F{$git_color}"'(${prompt_pure_vcs_info[tag]})')
+	fi
 	# Git pull/push arrows.
 	if [[ -n $prompt_pure_git_arrows ]]; then
 		preprompt_parts+=('%F{cyan}${prompt_pure_git_arrows}%f')
@@ -222,6 +225,7 @@ prompt_pure_async_vcs_info() {
 	local -A info
 	info[top]=$vcs_info_msg_1_
 	info[branch]=$vcs_info_msg_0_
+	info[tag]=$(command git describe --tags `git rev-list --tags --max-count=1`)
 
 	print -r - ${(@kvq)info}
 }
@@ -289,6 +293,7 @@ prompt_pure_async_tasks() {
 		unset prompt_pure_git_fetch_pattern
 		prompt_pure_vcs_info[branch]=
 		prompt_pure_vcs_info[top]=
+		prompt_pure_vcs_info[tag]=
 	fi
 	unset MATCH MBEGIN MEND
 
@@ -370,6 +375,7 @@ prompt_pure_async_callback() {
 			# always update branch and toplevel
 			prompt_pure_vcs_info[branch]=$info[branch]
 			prompt_pure_vcs_info[top]=$info[top]
+			prompt_pure_vcs_info[tag]=$info[tag]
 
 			prompt_pure_preprompt_render
 			;;
