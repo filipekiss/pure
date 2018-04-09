@@ -116,8 +116,12 @@ prompt_pure_preprompt_render() {
 	if [[ -n $prompt_pure_vcs_info[branch] ]]; then
 		preprompt_parts+=("%F{$git_color}"'${prompt_pure_vcs_info[branch]}${prompt_pure_git_dirty}%f')
 	fi
-	if [[ -n $prompt_pure_vcs_info[tag] ]]; then
-		preprompt_parts+=("%F{$git_color}"'(${prompt_pure_vcs_info[tag]})')
+	if [[ -n $prompt_pure_vcs_info[latest_tag] ]]; then
+		local tag_info=${prompt_pure_vcs_info[latest_tag]}
+		if [[ -n $prompt_pure_vcs_info[current_tag] && $prompt_pure_vcs_info[current_tag] != $prompt_pure_vcs_info[latest_tag] ]]; then
+			tag_info="c:${prompt_pure_vcs_info[current_tag]}/l:${prompt_pure_vcs_info[latest_tag]}"
+		fi
+		preprompt_parts+=("%F{$git_color}""(${tag_info})")
 	fi
 	# Git pull/push arrows.
 	if [[ -n $prompt_pure_git_arrows ]]; then
@@ -225,7 +229,10 @@ prompt_pure_async_vcs_info() {
 	local -A info
 	info[top]=$vcs_info_msg_1_
 	info[branch]=$vcs_info_msg_0_
-	info[tag]=$(command git describe --tags `git rev-list --tags --max-count=1`)
+	info[latest_tag]=$(command git describe --tags `git rev-list --tags --max-count=1`)
+	local _current_tag=$(command git describe --tags --exact || "")
+	[[ $_current_tag != $info[latest_tag] ]] && \
+		info[current_tag]=$_current_tag
 
 	print -r - ${(@kvq)info}
 }
@@ -293,7 +300,8 @@ prompt_pure_async_tasks() {
 		unset prompt_pure_git_fetch_pattern
 		prompt_pure_vcs_info[branch]=
 		prompt_pure_vcs_info[top]=
-		prompt_pure_vcs_info[tag]=
+		prompt_pure_vcs_info[latest_tag]=
+		prompt_pure_vcs_info[current_tag]=
 	fi
 	unset MATCH MBEGIN MEND
 
@@ -375,7 +383,8 @@ prompt_pure_async_callback() {
 			# always update branch and toplevel
 			prompt_pure_vcs_info[branch]=$info[branch]
 			prompt_pure_vcs_info[top]=$info[top]
-			prompt_pure_vcs_info[tag]=$info[tag]
+			prompt_pure_vcs_info[current_tag]=$info[current_tag]
+			prompt_pure_vcs_info[latest_tag]=$info[latest_tag]
 
 			prompt_pure_preprompt_render
 			;;
