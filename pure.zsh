@@ -23,7 +23,7 @@
 # \e[K  => clears everything after the cursor on the current line
 # \e[2K => clear everything on the current line
 
-
+PURE_PROMPT_STATUS_COLOR="${PURE_PROMPT_INS_MODE_COLOR:-blue}"
 # turns seconds into human readable time
 # 165392 => 1d 21h 56m 32s
 # https://github.com/sindresorhus/pretty-time-zsh
@@ -50,6 +50,20 @@ prompt_pure_check_cmd_exec_time() {
 	(( elapsed > ${PURE_CMD_MAX_EXEC_TIME:-5} )) && {
 		prompt_pure_human_time_to_var $elapsed "prompt_pure_cmd_exec_time"
 	}
+}
+
+prompt_pure_vim_mode() {
+	case $KEYMAP in
+		vicmd)
+			PURE_PROMPT_STATUS_COLOR="${PURE_PROMPT_NORMAL_MODE_COLOR:-green}"
+			PURE_PROMPT_STATUS_SYMBOL_COLOR="${PURE_PROMPT_NORMAL_MODE_COLOR:-green}"
+			;;
+		viins|main)
+			PURE_PROMPT_STATUS_COLOR="${PURE_PROMPT_INS_MODE_COLOR:-blue}"
+			PURE_PROMPT_STATUS_SYMBOL_COLOR="magenta"
+			;;
+	esac
+	prompt_pure_preprompt_render
 }
 
 prompt_pure_set_title() {
@@ -109,7 +123,7 @@ prompt_pure_preprompt_render() {
 	local -a preprompt_parts
 
 	# Set the path.
-	preprompt_parts+=('%F{blue}%~%f')
+	preprompt_parts+=("%F{${PURE_PROMPT_STATUS_COLOR}}%~%f")
 
 	# Add git branch and dirty status info.
 	typeset -gA prompt_pure_vcs_info
@@ -461,6 +475,10 @@ prompt_pure_setup() {
 	add-zsh-hook precmd prompt_pure_precmd
 	add-zsh-hook preexec prompt_pure_preexec
 
+	# register custom function for vim-mode
+	zle -N zle-line-init prompt_pure_vim_mode
+	zle -N zle-keymap-select prompt_pure_vim_mode
+
 	# show username@host if logged in through SSH
 	[[ "$SSH_CONNECTION" != '' || -n $PURE_SHOW_USERNAME ]] && prompt_pure_username='%F{242}%n@%m%f'
 
@@ -471,7 +489,7 @@ prompt_pure_setup() {
 	PROMPT='%(12V.%F{242}%12v%f .)'
 
 	# prompt turns red and change symbol if the previous command didn't exit with 0
-	PROMPT+='%(?.%F{magenta}${PURE_PROMPT_SYMBOL:-❯}.%F{red}${PURE_PROMPT_SYMBOL_ERROR:-⊘})%f '
+	PROMPT+='%(?.%F{${PURE_PROMPT_STATUS_SYMBOL_COLOR:-magenta}}${PURE_PROMPT_SYMBOL:-❯}.%F{red}${PURE_PROMPT_SYMBOL_ERROR:-⊘})%f '
 }
 
 prompt_pure_setup "$@"
