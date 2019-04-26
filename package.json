@@ -1,6 +1,6 @@
 {
   "name": "pure-prompt",
-  "version": "1.6.0",
+  "version": "1.9.0",
   "description": "Pretty, minimal and fast ZSH prompt",
   "license": "MIT",
   "repository": "sindresorhus/pure",
@@ -13,6 +13,10 @@
     {
       "name": "Mathias Fredriksson",
       "url": "github.com/mafredri"
+    },
+    {
+      "name": "Filipe Kiss",
+      "url": "https://github.com/filipekiss"
     }
   ],
   "engines": {
