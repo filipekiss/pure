@@ -436,6 +436,10 @@ prompt_pure_check_git_arrows() {
 
 prompt_pure_get_node_version() {
 	setopt localoptions noshwordsplit
+	if [[ -z $PURE_SHOW_NODE ]]; then
+		unset prompt_pure_node_version
+		return
+	fi
 	prompt_pure_node_version=$(command node --version || echo '')
 }
 
@@ -630,6 +634,7 @@ prompt_pure_state_setup() {
 		username "$username"
 		prompt	 "${PURE_PROMPT_SYMBOL:-❯}"
 	)
+
 }
 
 prompt_pure_system_report() {
