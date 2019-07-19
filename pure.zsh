@@ -140,6 +140,8 @@ prompt_pure_preprompt_render() {
 	# Initialize the preprompt array.
 	local -a preprompt_parts
 
+	prompt_pure_get_node_version
+
 	# Set the path.
 	preprompt_parts+=('%F{${prompt_pure_colors[path]}}%~%f')
 
@@ -158,6 +160,11 @@ prompt_pure_preprompt_render() {
 	# Git pull/push arrows.
 	if [[ -n $prompt_pure_git_arrows ]]; then
 		preprompt_parts+=('%F{$prompt_pure_colors[git:arrow]}${prompt_pure_git_arrows}%f')
+	fi
+
+	# Node version
+	if [[ -n $prompt_pure_node_version ]]; then
+		preprompt_parts+=("%F{$git_color}""  ${prompt_pure_node_version}%f")
 	fi
 
 	# Username and machine, if applicable.
@@ -425,6 +432,11 @@ prompt_pure_check_git_arrows() {
 
 	[[ -n $arrows ]] || return
 	typeset -g REPLY=$arrows
+}
+
+prompt_pure_get_node_version() {
+	setopt localoptions noshwordsplit
+	prompt_pure_node_version=$(command node --version || echo '')
 }
 
 prompt_pure_async_callback() {
