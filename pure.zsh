@@ -164,7 +164,7 @@ prompt_pure_preprompt_render() {
 
 	# Node version
 	if [[ -n $prompt_pure_node_version ]]; then
-		preprompt_parts+=("%F{$git_color}""  ${prompt_pure_node_version}%f")
+		preprompt_parts+=("%F{$git_color}"" ${prompt_pure_node_version}%f")
 	fi
 
 	# Username and machine, if applicable.
